@@ -1,0 +1,15 @@
+{% extends "gerenciamento/menu/base.html" %}
+
+
+{% block content %}
+    <h1>Erro</h1>
+    <ul>
+        {% for especie in especies %}
+            <li>{{ especie }}</li>
+        {% empty %}
+            <li class="alert alert-danger">
+                O nome da <b>Espécie</b> já foi registrada. Tente outro nome!
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

@@ -1,0 +1,641 @@
+{% extends 'gerenciamento/menu/base.html' %}
+
+{% block content %}
+<h1 class="text-center">Gerenciamento de Insumos</h1>
+
+
+<div class="text-right mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAddInsumo">Adicionar Insumo</button>
+</div>
+
+
+<form method="get" class="d-flex flex-column gap-2">
+    <!-- Linha 1: Campo de busca e botões -->
+    <div class="d-flex mb-2">
+        <input type="text" name="search" class="form-control me-2" placeholder="Buscar Insumo" value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary me-2">Buscar</button>
+        <a href="{% url 'insumos' %}" class="btn btn-outline-secondary">Limpar</a>
+    </div>
+
+    <!-- Linha 2: Filtro por data de compra (AGORA DENTRO DO FORM) -->
+    <div class="d-flex gap-1">
+        <select class="form-select form-select-sm flex-grow-1" 
+            style="height: 38px; font-weight: 500; border-width: 2px;"
+            onchange="applyDatePreset(this.value)">
+            <option value="">Intervalo de...</option>
+            <option value="today">Hoje</option>
+            <option value="week">Esta semana</option>
+            <option value="month">Este mês</option>
+        </select>
+
+        <input type="date" id="data_inicio" name="data_inicio" class="form-control form-control-sm flex-grow-1" 
+            style="height: 38px; font-weight: 500; border-width: 2px;" value="{{ data_inicio }}">
+
+        <span class="input-group-text px-2 fw-bold" style="height: 38px;">até</span>
+
+        <input type="date" id="data_fim" name="data_fim" class="form-control form-control-sm flex-grow-1" 
+            style="height: 38px; font-weight: 500; border-width: 2px;" value="{{ data_fim }}">
+    </div>
+</form>
+
+<br>
+
+
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Status
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="?{% for key, value in request.GET.items %}{% if key != 'estado_filtro' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}">⚫ Todos</a></li>
+                            <li><a class="dropdown-item" href="?{{ request.GET.urlencode|cut:'&estado_filtro=verde' }}&estado_filtro=verde">🟢 Estoque Seguro</a></li>
+                            <li><a class="dropdown-item" href="?{{ request.GET.urlencode|cut:'&estado_filtro=vermelho' }}&estado_filtro=vermelho">🔴 Estoque Crítico</a></li>
+                        </ul>
+                    </div>
+                </th>
+                <th>
+                    Nome Produto 
+                    <button type="button" class="btn btn-sm btn-outline-primary sort-btn"
+                            data-sort="nome_produto">
+                        <i class="fas fa-sort"></i>
+                    </button>
+                </th>
+                <th>
+                    Quantidade 
+                    <button type="button" class="btn btn-sm btn-outline-primary sort-btn"
+                            data-sort="quantidade_produto">
+                        <i class="fas fa-sort"></i>
+                    </button>
+                </th>
+                <th>
+                    Estoque Mínimo 
+                    <button type="button" class="btn btn-sm btn-outline-primary sort-btn"
+                            data-sort="estoque_minimo">
+                        <i class="fas fa-sort"></i>
+                    </button>
+                </th>
+                <th>
+                    Data Compra 
+                    <button type="button" class="btn btn-sm btn-outline-primary sort-btn"
+                            data-sort="data_compra">
+                        <i class="fas fa-sort"></i>
+                    </button>
+                </th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            {% for insumo in insumos %}
+            <tr {% if insumo.is_below_minimum %} class="table-danger" {% endif %}>
+                <td class="text-center">
+                    {% if insumo.quantidade_produto <= insumo.estoque_minimo %}
+                        🔴
+                    {% else %}
+                        🟢
+                    {% endif %}
+                </td>
+                <td>{{ insumo.nome_produto }}</td>
+                <td>{{ insumo.quantidade_produto }}</td>
+                <td>{{ insumo.estoque_minimo }}</td>
+                <td>{{ insumo.data_compra }}</td>
+                <td class="text-center">
+                    <!-- Botão para abrir o modal "Dar Baixa" -->
+                    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalBaixaInsumo"
+                        data-id="{{ insumo.id }}" data-nome="{{ insumo.nome_produto }}" data-quantidade="{{ insumo.quantidade_produto }}"
+                        title="Dar Baixa">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+
+
+
+                    <!-- Dar Entrada -->
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalEntradaInsumo"
+                        data-id="{{ insumo.id }}" data-nome="{{ insumo.nome_produto }}" data-quantidade="{{ insumo.quantidade_produto }}"
+                        title="Dar Entrada">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+
+                    <!-- Editar -->
+                    <a href="{% url 'insumo-update' insumo.id %}" class="btn btn-warning btn-sm" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </a>
+
+                    <!-- Excluir -->
+                    <a href="{% url 'insumo-delete' insumo.id %}" class="btn btn-danger btn-sm" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+
+                    
+                
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">Nenhum Insumo Registrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Primeira">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Anterior">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Próxima">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
+
+<div class="modal fade" id="modalAddInsumo" tabindex="-1" aria-labelledby="modalAddInsumoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container-form">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h1 class="form-title">Adicionar Insumo</h1>
+                            <p class="form-subtitle">Preencha os detalhes do insumo antes de salvar</p>
+                        </div>
+                        
+                        <form method="post" action="{% url 'insumo-create' %}" class="custom-form">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                {{ form.as_p }}
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEntradaInsumo" tabindex="-1" aria-labelledby="modalEntradaInsumoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container-form">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h1 class="form-title">Dar Entrada no Estoque</h1>
+                            <p class="form-subtitle">Adicione uma quantidade ao estoque deste insumo</p>
+                        </div>
+
+                        <form method="post" action="{% url 'insumo-entrada' %}" class="custom-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="insumo_id" id="insumo_id">
+                            <div class="form-group d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                                <strong class="fs-5">Produto:</strong> 
+                                <span id="insumo_nome" class="fs-5 me-4 text-muted">-</span>
+                                
+                                <strong class="fs-5">Quantidade Atual:</strong> 
+                                <span id="insumo_quantidade" class="fs-5 text-muted">-</span>
+                            </div>
+                             
+                            <hr>
+                            
+                            
+                            
+                            
+                            
+
+                            <div class="form-group">
+                                <label for="quantidade_entrada" class="form-label">Quantidade a Adicionar:</label>
+                                <input type="number" class="form-control" name="quantidade_entrada" id="quantidade_entrada" required min="1">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="fas fa-check"></i> Confirmar Entrada
+                                </button>
+                                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dar Baixa -->
+<div class="modal fade" id="modalBaixaInsumo" tabindex="-1" aria-labelledby="modalBaixaInsumoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container-form">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h1 class="form-title">Dar Baixa no Estoque</h1>
+                            <p class="form-subtitle">Informe a quantidade a ser retirada do estoque.</p>
+                        </div>
+
+                        <form method="post" action="{% url 'insumo-baixa' 0 %}" class="custom-form" id="formBaixa">
+                            {% csrf_token %}
+                            <input type="hidden" name="insumo_id" id="baixa_insumo_id">
+
+                            <div class="form-group d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                                <strong class="fs-5">Produto:</strong> 
+                                <span id="baixa_insumo_nome" class="fs-5 me-4 text-muted">-</span>
+                                
+                                <strong class="fs-5">Quantidade Atual:</strong> 
+                                <span id="baixa_insumo_quantidade" class="fs-5 text-muted">-</span>
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group">
+                                <label for="quantidade_baixa" class="form-label">Quantidade a Retirar:</label>
+                                <input type="number" class="form-control" name="quantidade" id="quantidade_baixa" required min="1">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="fas fa-check"></i> Confirmar Baixa
+                                </button>
+                                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<style>
+        .has-error input {
+            border: 2px solid #dc3545 !important;
+        }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        padding: 5px 10px;
+        background: #f8d7da;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .error-message i {
+        font-size: 1rem;
+    }
+
+    .container-form {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #95a5a6;
+        font-size: 0.95rem;
+    }
+
+    .custom-form label {
+        display: block;
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+    }
+
+    .custom-form input,
+    .custom-form select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-form input:focus,
+    .custom-form select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        outline: none;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-text {
+        display: block;
+        color: #7f8c8d;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-save {
+        background: #27ae60;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+        background: #bdc3c7;
+        color: #2c3e50;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+    }
+
+    .btn-cancel:hover {
+        background: #95a5a6;
+        color: white;
+    }
+
+    input[type="date"] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 0.8rem;
+    }
+
+    .modal-dialog {
+    max-width: 700px;
+    width: 90%; 
+    }
+</style>
+
+<script>
+    
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const sortButtons = document.querySelectorAll(".sort-btn");
+
+        sortButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const sortField = this.dataset.sort;
+                const currentParams = new URLSearchParams(window.location.search);
+                const tableId = "sortState"; // Identificador único para salvar no localStorage
+
+                let currentSort = localStorage.getItem(`${tableId}-sort`);
+                let currentOrder = localStorage.getItem(`${tableId}-order`);
+
+                // Alternância entre os três modos (asc -> desc -> padrão)
+                if (!currentSort || currentSort !== sortField) {
+                    currentOrder = "asc";
+                } else if (currentOrder === "asc") {
+                    currentOrder = "desc";
+                } else {
+                    // Remove a ordenação e volta ao padrão
+                    currentParams.delete("sort");
+                    currentParams.delete("order");
+                    localStorage.removeItem(`${tableId}-sort`);
+                    localStorage.removeItem(`${tableId}-order`);
+                    window.location.search = currentParams.toString();
+                    return;
+                }
+
+                // Salva a ordenação no localStorage
+                localStorage.setItem(`${tableId}-sort`, sortField);
+                localStorage.setItem(`${tableId}-order`, currentOrder);
+
+                // Aplica a nova ordenação à URL e recarrega a página
+                currentParams.set("sort", sortField);
+                currentParams.set("order", currentOrder);
+                window.location.search = currentParams.toString();
+            });
+        });
+
+        // Recupera e aplica a ordenação salva no localStorage
+        const tableId = "sortState";
+        const savedSort = localStorage.getItem(`${tableId}-sort`);
+        const savedOrder = localStorage.getItem(`${tableId}-order`);
+
+        if (savedSort && savedOrder) {
+            const currentParams = new URLSearchParams(window.location.search);
+            currentParams.set("sort", savedSort);
+            currentParams.set("order", savedOrder);
+            history.replaceState(null, "", "?" + currentParams.toString());
+        }
+
+        // Atualiza os ícones dos botões para refletir o estado atual
+        document.querySelectorAll(".sort-btn").forEach(button => {
+            const icon = button.querySelector("i");
+            icon.classList.remove("fa-sort-up", "fa-sort-down", "fa-sort");
+
+            if (button.dataset.sort === savedSort) {
+                if (savedOrder === "asc") {
+                    icon.classList.add("fa-sort-up");
+                } else if (savedOrder === "desc") {
+                    icon.classList.add("fa-sort-down");
+                }
+            } else {
+                icon.classList.add("fa-sort");
+            }
+        });
+    });
+
+    function applyDatePreset(preset) {
+        const today = new Date();
+        const start = document.getElementById('data_inicio');
+        const end = document.getElementById('data_fim');
+
+        const presets = {
+            today: () => [today, today],
+            week: () => {
+                const first = new Date(today);
+                first.setDate(today.getDate() - today.getDay());
+                const last = new Date(first);
+                last.setDate(first.getDate() + 6);
+                return [first, last];
+            },
+            month: () => [
+                new Date(today.getFullYear(), today.getMonth(), 1),
+                new Date(today.getFullYear(), today.getMonth() + 1, 0)
+            ],
+            last_month: () => [
+                new Date(today.getFullYear(), today.getMonth() - 1, 1),
+                new Date(today.getFullYear(), today.getMonth(), 0)
+            ],
+            last_6_months: () => [
+                new Date(today.getFullYear(), today.getMonth() - 6, 1),
+                new Date(today.getFullYear(), today.getMonth(), 0)
+            ],
+            year: () => [
+                new Date(today.getFullYear(), 0, 1),
+                new Date(today.getFullYear(), 11, 31)
+            ]
+        };
+
+        if (presets[preset]) {
+            const [startDate, endDate] = presets[preset]();
+            start.value = startDate.toISOString().split('T')[0];
+            end.value = endDate.toISOString().split('T')[0];
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById("data_inicio").value = urlParams.get("data_inicio") || "";
+        document.getElementById("data_fim").value = urlParams.get("data_fim") || "";
+    });
+
+    function applyDatePreset(preset) {
+        const today = new Date();
+        const start = document.getElementById('data_inicio');
+        const end = document.getElementById('data_fim');
+
+        const presets = {
+            today: () => [today, today],
+            week: () => {
+                const first = new Date(today);
+                first.setDate(today.getDate() - today.getDay());
+                const last = new Date(today);
+                last.setDate(first.getDate() + 6);
+                return [first, last];
+            },
+            month: () => [
+                new Date(today.getFullYear(), today.getMonth(), 1),
+                new Date(today.getFullYear(), today.getMonth() + 1, 0)
+            ],
+            last_month: () => [
+                new Date(today.getFullYear(), today.getMonth() - 1, 1),
+                new Date(today.getFullYear(), today.getMonth(), 0)
+            ],
+            last_6_months: () => [
+                new Date(today.getFullYear(), today.getMonth() - 6, 1),
+                new Date(today.getFullYear(), today.getMonth(), 0)
+            ],
+            year: () => [
+                new Date(today.getFullYear(), 0, 1),
+                new Date(today.getFullYear(), 11, 31)
+            ]
+        };
+
+        if (presets[preset]) {
+            const [startDate, endDate] = presets[preset]();
+            start.value = startDate.toISOString().split('T')[0];
+            end.value = endDate.toISOString().split('T')[0];
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const modalEntrada = document.getElementById("modalEntradaInsumo");
+
+    modalEntrada.addEventListener("show.bs.modal", function (event) {
+        const button = event.relatedTarget;
+        const insumoId = button.getAttribute("data-id");
+        const insumoNome = button.getAttribute("data-nome");
+        const insumoQuantidade = button.getAttribute("data-quantidade");
+
+        document.getElementById("insumo_id").value = insumoId;
+        document.getElementById("insumo_nome").textContent = insumoNome;
+        document.getElementById("insumo_quantidade").textContent = insumoQuantidade;
+    });
+});
+
+
+/* modal baixa */
+
+document.addEventListener("DOMContentLoaded", function () {
+    const modalBaixa = document.getElementById("modalBaixaInsumo");
+
+    modalBaixa.addEventListener("show.bs.modal", function (event) {
+        const button = event.relatedTarget;
+        const insumoId = button.getAttribute("data-id");
+        const insumoNome = button.getAttribute("data-nome");
+        const insumoQuantidade = button.getAttribute("data-quantidade");
+
+        document.getElementById("baixa_insumo_id").value = insumoId;
+        document.getElementById("baixa_insumo_nome").textContent = insumoNome;
+        document.getElementById("baixa_insumo_quantidade").textContent = insumoQuantidade;
+
+        // Atualiza a URL do formulário para incluir o ID do insumo
+        document.getElementById("formBaixa").action = `/insumos/dar_baixa/${insumoId}/`;
+    });
+});
+
+
+
+</script>
+    
+
+
+{% endblock %}

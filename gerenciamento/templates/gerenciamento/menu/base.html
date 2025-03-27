@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Piscicultura{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        
+    /*MENU LATERAL */
+        /* Remove a animação inicial da sidebar ao carregar */
+    .sidebar {
+        transition: none !important;
+    }
+
+    /* Remove transições no carregamento da página */
+    .preload .sidebar,
+    .preload .sidebar .nav-item a i,
+    .preload .content {
+        transition: none !important;
+    }
+
+
+
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 20px;
+            color: white;
+            font-size: 16px;
+            padding-left: 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+
+        .sidebar.collapsed h3 {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item a span {
+            display: none;
+        }
+
+
+        .sidebar .nav {
+            padding-top: 40px; 
+        }
+
+  
+        .sidebar .nav-item a {
+            color: #f8f9fa;
+            padding: 10px 5px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-left: 15px;
+        }
+
+
+        .sidebar .nav-item a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            transition: font-size 0.3s;
+            display: inline-block; 
+        }
+
+
+        .sidebar.collapsed .nav-item a i {
+            font-size: 2rem;
+            transform: scale(1); 
+            margin-left: -10px; 
+            transition: transform 0.3s ease, font-size 0.3s ease, margin-left 0.3s ease; 
+         transition: transform 0.3s ease, font-size 0.3s ease;
+        }
+
+
+        .sidebar.collapsed .nav-item a:hover i {
+            transform: scale(1.2);
+        }
+
+
+        .sidebar .nav-item a:hover {
+            background-color: #606262; 
+            color: #fff;
+            z-index: 1;
+            transform: translateX(3px);
+        }
+
+        .sidebar .nav-item .active {
+            background-color: #007bff;
+            color: white;
+            z-index: 1;  
+            transform: translateX(-5px);
+        }
+
+        .sidebar .collapse-btn {
+            position: absolute;
+            top: 13px;
+            right: 20px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        /* Remove animação automática do botão no carregamento */
+        .preload .collapse-btn .bar {
+            transition: none !important;
+        }
+
+        /* Mantém a animação normal quando o usuário clicar */
+        .sidebar .collapse-btn .bar {
+            width: 30px;
+            height: 4px;
+            background-color: white;
+            margin: 6px 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Quando a sidebar está recolhida, transforma os traços no "X" */
+        .sidebar.collapsed .collapse-btn .bar:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 5px);
+        }
+
+        .sidebar.collapsed .collapse-btn .bar:nth-child(2) {
+            opacity: 0;
+        }
+
+        .sidebar.collapsed .collapse-btn .bar:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -5px);
+        }
+
+        .sidebar.collapsed .menu-title {
+            display: none;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            transition: margin-left 0.3s;
+        }
+
+        .content.collapsed {
+            margin-left: 80px;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .btn {
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table th, .table td {
+            text-align: center;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f1f1f1;
+        }
+
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: #ffffff;
+        }
+        
+        /* Destacar a página ativa no menu */
+    .sidebar .nav-item .active {
+        background-color: #007bff; /* Azul padrão para os menus normais */
+        color: white;
+        z-index: 1;
+        transform: translateX(-5px);
+    }
+
+    /* Destacar o Login ativo (fundo verde escuro) */
+    .sidebar .nav-item .nav-link.active.text-success {
+        background-color: #218838 !important; /* Verde escuro */
+        color: white !important; /* Texto branco */
+    }
+
+    /* Destacar o Logout ativo (fundo vermelho escuro) */
+    .sidebar .nav-item .nav-link.active.text-danger {
+        background-color: #c82333 !important; /* Vermelho escuro */
+        color: white !important; /* Texto branco */
+    }
+
+        /* Esconde a transição inicial para evitar animação indesejada */
+    .sidebar {
+        transition: none !important;
+    }
+
+    /* Se a sidebar estava recolhida, já começa assim sem animação */
+    .sidebar.preload.collapsed {
+        width: 80px;
+    }
+
+    
+    .sidebar {
+    display: flex;
+    flex-direction: column;
+    }
+
+    .nav-bottom {
+        margin-top: auto;
+        padding-bottom: 20px; 
+    }
+    .nav-bottom {
+    margin-top: auto; 
+    padding-bottom: 20px; 
+    }
+
+    .nav-bottom ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* estilo bola perfil */
+    .perfil-foto {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    background-color: white;
+    border: 2px solid #ddd;
+}
+
+.perfil-nome {
+    font-size: 16px;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.2); /* Fundo branco transparente */
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.sidebar.collapsed .perfil-nome {
+    visibility: hidden;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+
+
+/* Container do Perfil */
+.text-center.mb-3 {
+    position: absolute;
+    bottom: 80px; /* Distância do fundo */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2; /* Garante que fique acima */
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 !important;
+}
+
+/* Container do Logout */
+.nav-bottom {
+    position: absolute;
+    bottom: 20px; /* Distância do fundo */
+    left: 0;
+    right: 0;
+    z-index: 1; /* Fica abaixo do perfil */
+    padding: 0 15px;
+}
+
+/* Garantir que não haja sobreposição */
+.sidebar {
+    padding-bottom: 140px; /* Espaço para os elementos fixos */
+}
+
+/* Ajusta o layout do card */
+.perfil-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Tamanho menor da imagem */
+.perfil-imagem {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    margin-bottom: 15px;
+}
+
+/* Ajusta a formatação do formulário */
+.perfil-form {
+    width: 100%;
+    text-align: left;
+}
+
+/* Espaçamento entre os campos */
+.perfil-form .form-group {
+    margin-bottom: 15px;
+}
+
+/* Ajusta a largura do botão para manter a harmonia */
+.perfil-form button {
+    margin-top: 10px;
+}
+
+
+
+
+    </style>
+
+    
+</head>
+<body>
+    {% include 'gerenciamento/menu/nav.html' %}
+    {% include 'gerenciamento/menu/sininho.html' %}
+    
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+    /*notificacao*/
+
+
+  document.addEventListener("DOMContentLoaded", function(){
+    const notificationBtn = document.getElementById("notification-btn");
+    const notificationDropdown = document.getElementById("notification-dropdown");
+    const markAllBtn = document.getElementById("mark-all-btn");
+
+    
+    notificationBtn.addEventListener("click", function(){
+      notificationDropdown.classList.toggle("show");
+    });
+
+    
+    markAllBtn.addEventListener("click", function(){
+      fetch("{% url 'mark-notifications' %}")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("notification-count").classList.add("d-none");
+          loadNotifications();
+        });
+    });
+
+
+    function loadNotifications(){
+      fetch("{% url 'get-notifications' %}")
+        .then(response => response.json())
+        .then(data => {
+          const notificationCount = document.getElementById("notification-count");
+          const notificationList = document.getElementById("notification-list");
+
+          notificationList.innerHTML = "";
+          
+          if(data.count > 0){
+            notificationCount.textContent = data.count;
+            notificationCount.classList.remove("d-none");
+          } else {
+            notificationCount.classList.add("d-none");
+          }
+
+          data.notificacoes.forEach(function(notification){
+              const li = document.createElement("li");
+              li.classList.add("list-group-item");
+              li.innerHTML = `<i class="fas fa-exclamation-circle text-${notification.tipo}"></i> ${notification.mensagem}`;
+              notificationList.appendChild(li);
+          });
+        });
+    }
+
+    loadNotifications();
+    setInterval(loadNotifications, 60000);
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+        var body = document.body;
+        var sidebar = document.querySelector('.sidebar');
+        var content = document.querySelector('.content');
+        var collapseBtn = document.querySelector(".collapse-btn");
+
+        
+        body.classList.add("preload");
+
+        
+        if (localStorage.getItem("sidebarCollapsed") === "true") {
+            sidebar.classList.add("collapsed");
+            content.classList.add("collapsed");
+        }
+
+        
+        setTimeout(() => {
+            body.classList.remove("preload");
+        }, 100);
+
+        
+        function toggleSidebar() {
+            sidebar.classList.toggle("collapsed");
+            content.classList.toggle("collapsed");
+
+            
+            localStorage.setItem("sidebarCollapsed", sidebar.classList.contains("collapsed"));
+        }
+
+        
+        if (collapseBtn) {
+            collapseBtn.addEventListener("click", toggleSidebar);
+        }
+    });
+
+  document.addEventListener("DOMContentLoaded", function () {
+        const sortButtons = document.querySelectorAll(".sort-btn");
+
+        sortButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const sortField = this.dataset.sort;
+                const currentParams = new URLSearchParams(window.location.search);
+                const tableId = "sortState"; 
+
+                let currentSort = localStorage.getItem(`${tableId}-sort`);
+                let currentOrder = localStorage.getItem(`${tableId}-order`);
+
+               
+                if (!currentSort || currentSort !== sortField) {
+                    currentOrder = "asc";
+                } else if (currentOrder === "asc") {
+                    currentOrder = "desc";
+                } else {
+                 
+                    currentParams.delete("sort");
+                    currentParams.delete("order");
+                    localStorage.removeItem(`${tableId}-sort`);
+                    localStorage.removeItem(`${tableId}-order`);
+                    window.location.search = currentParams.toString();
+                    return;
+                }
+
+              
+                localStorage.setItem(`${tableId}-sort`, sortField);
+                localStorage.setItem(`${tableId}-order`, currentOrder);
+
+            
+                currentParams.set("sort", sortField);
+                currentParams.set("order", currentOrder);
+                window.location.search = currentParams.toString();
+            });
+        });
+
+ 
+        const tableId = "sortState";
+        const savedSort = localStorage.getItem(`${tableId}-sort`);
+        const savedOrder = localStorage.getItem(`${tableId}-order`);
+
+        if (savedSort && savedOrder) {
+            const currentParams = new URLSearchParams(window.location.search);
+            currentParams.set("sort", savedSort);
+            currentParams.set("order", savedOrder);
+            history.replaceState(null, "", "?" + currentParams.toString());
+        }
+
+        document.querySelectorAll(".sort-btn").forEach(button => {
+            const icon = button.querySelector("i");
+            icon.classList.remove("fa-sort-up", "fa-sort-down", "fa-sort");
+
+            if (button.dataset.sort === savedSort) {
+                if (savedOrder === "asc") {
+                    icon.classList.add("fa-sort-up");
+                } else if (savedOrder === "desc") {
+                    icon.classList.add("fa-sort-down");
+                }
+            } else {
+                icon.classList.add("fa-sort");
+            }
+        });
+    });
+
+
+    
+    </script>
+</body>
+</html>

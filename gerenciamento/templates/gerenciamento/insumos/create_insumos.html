@@ -1,0 +1,15 @@
+{% extends "gerenciamento/menu/base.html" %}
+
+
+{% block content %}
+    <h1>Erro</h1>
+    <ul>
+        {% for insumo in insumos %}
+            <li>{{ insumo }}</li>
+        {% empty %}
+            <li class="alert alert-danger">
+                O nome do <b>Insumo</b> já foi registrada. Tente outro nome!
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

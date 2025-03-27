@@ -1,0 +1,188 @@
+
+{% extends 'gerenciamento/menu/base.html' %}
+{% block content %}
+<div class="container-form">
+    <div class="form-card">
+        <div class="form-header">
+            <h1 class="form-title"> Editar Insumo</h1>
+            <p class="form-subtitle">Verifique se todos os dados estão corretos antes de salvar!</p>
+        </div>
+        
+        <form method="post" class="custom-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.nome_produto.id_for_label }}">Nome do Insumo:</label>
+                {{ form.nome_produto }}
+
+                {% if form.nome_produto.errors %}
+                    <div class="error-message">
+                        {% for error in form.nome_produto.errors %}
+                            <i class="fas fa-exclamation-circle"></i> {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.quantidade_produto.id_for_label }}">Quantidade:</label>
+                        {{ form.quantidade_produto }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.estoque_minimo.id_for_label }}">Estoque Mínimo:</label>
+                        {{ form.estoque_minimo }}
+                        <small class="form-text">quantidade mínima que o estoque pode alcançar</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.data_compra.id_for_label }}">Data de Entrada:</label>
+                        {{ form.data_compra }}
+                    </div>
+                </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+                <a href="{% url 'insumos' %}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+        .has-error input {
+            border: 2px solid #dc3545 !important;
+        }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        padding: 5px 10px;
+        background: #f8d7da;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .error-message i {
+        font-size: 1rem;
+    }
+
+    .container-form {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #95a5a6;
+        font-size: 0.95rem;
+    }
+
+    .custom-form label {
+        display: block;
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+    }
+
+    .custom-form input,
+    .custom-form select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-form input:focus,
+    .custom-form select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        outline: none;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-text {
+        display: block;
+        color: #7f8c8d;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-save {
+        background: #27ae60;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+        background: #bdc3c7;
+        color: #2c3e50;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+    }
+
+    .btn-cancel:hover {
+        background: #95a5a6;
+        color: white;
+    }
+
+    input[type="date"] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 0.8rem;
+    }
+</style>
+{% endblock %}

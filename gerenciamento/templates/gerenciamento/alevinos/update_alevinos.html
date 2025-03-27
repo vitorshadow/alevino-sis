@@ -1,0 +1,114 @@
+{% extends 'gerenciamento/menu/base.html' %}
+{% block content %}
+<div class="container-form">
+    <div class="form-card">
+        <div class="form-header">
+            <h1 class="form-title">Editar Espécie</h1>
+            <p class="form-subtitle">altere o nome da espécie selecionada</p>
+        </div>
+        
+        <form method="post" class="custom-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.especie.id_for_label }}">Nome da Espécie</label>
+                {{ form.especie }}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+                <a href="{% url 'alevinos' %}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .container-form {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #95a5a6;
+        font-size: 0.95rem;
+    }
+
+    .custom-form label {
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+    }
+
+    .custom-form input {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-form input:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-save {
+        background: #27ae60;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+        background: #bdc3c7;
+        color: #2c3e50;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+    }
+
+    .btn-cancel:hover {
+        background: #95a5a6;
+        color: white;
+    }
+</style>
+{% endblock %}

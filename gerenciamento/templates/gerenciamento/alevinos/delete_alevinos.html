@@ -1,0 +1,125 @@
+{% extends 'gerenciamento/menu/base.html' %}
+{% block content %}
+<div class="container-confirm">
+    <div class="confirm-card">
+        <div class="confirm-header">
+            <h1 class="confirm-title">Confirmar Exclusão</h1>
+        </div>
+
+        <div class="confirm-body">
+            <p class="confirm-message">
+                Você está prestes a <strong>EXCLUIR</strong> permanentemente a <strong>ESPÉCIE</strong>:
+                <br>
+                <strong class="species-name">{{ object.especie }}</strong>
+            </p>
+            
+            <p class="confirm-warning">
+                <i class="fas fa-info-circle"></i>
+                Esta ação não pode ser desfeita!
+            </p>
+        </div>
+
+        <form method="post" class="confirm-actions">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Confirmar Exclusão
+            </button>
+            <a href="{% url 'alevinos' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+
+<style>
+    .container-confirm {
+        max-width: 600px;
+        margin: 4rem auto;
+        padding: 0 1rem;
+    }
+
+    .confirm-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .confirm-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .warning-icon {
+        font-size: 3rem;
+        color: #e74c3c;
+        margin-bottom: 1rem;
+    }
+
+    .confirm-title {
+        color: #e74c3c;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .confirm-body {
+        margin: 2rem 0;
+    }
+
+    .confirm-message {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .species-name {
+        color: #c0392b;
+        font-size: 1.3rem;
+        display: block;
+        margin: 1rem 0;
+    }
+
+    .confirm-warning {
+        color: #e67e22;
+        background: #fdf2e9;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+
+    .confirm-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .btn-danger {
+        background: #e74c3c;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231,76,60,0.3);
+    }
+
+    .btn-secondary {
+        background: #bdc3c7;
+        color: #2c3e50;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #95a5a6;
+        color: white;
+    }
+</style>
+{% endblock %}

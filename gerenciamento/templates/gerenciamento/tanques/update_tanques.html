@@ -1,0 +1,191 @@
+{% extends 'gerenciamento/menu/base.html' %}
+{% block content %}
+<div class="container-form">
+    <div class="form-card">
+        <div class="form-header">
+            <h1 class="form-title"> Editar Tanque</h1>
+            <p class="form-subtitle">Verifique se todos os dados estão corretos antes de salvar</p>
+        </div>
+        
+        <form method="post" class="custom-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.id_tanque.id_for_label }}">Identificação do Tanque:</label>
+                {{ form.id_tanque }}
+
+                {% if form.id_tanque.errors %}
+                    <div class="error-message">
+                        {% for error in form.id_tanque.errors %}
+                            <i class="fas fa-exclamation-circle"></i> {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.especie_alevino.id_for_label }}">Espécie Povoada:</label>
+                {{ form.especie_alevino }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.quantidade_povoada.id_for_label }}">Quantidade Povoada:</label>
+                {{ form.quantidade_povoada }}
+                    <small class="form-text">Número de Alevinos Adicionados ao Tanque</small>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.data_povoamento.id_for_label }}">Data de Povoamento:</label>
+                        {{ form.data_povoamento }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.data_retirada.id_for_label }}">Data Prevista de Retirada:</label>
+                        {{ form.previsao_retirada }}
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+                <a href="{% url 'tanques' %}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+
+    .has-error input {
+            border: 2px solid #dc3545 !important;
+        }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        padding: 5px 10px;
+        background: #f8d7da;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .error-message i {
+        font-size: 1rem;
+    }
+
+    .container-form {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #95a5a6;
+        font-size: 0.95rem;
+    }
+
+    .custom-form label {
+        display: block;
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+    }
+
+    .custom-form input,
+    .custom-form select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-form input:focus,
+    .custom-form select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        outline: none;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-text {
+        display: block;
+        color: #7f8c8d;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-save {
+        background: #27ae60;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+        background: #bdc3c7;
+        color: #2c3e50;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+    }
+
+    .btn-cancel:hover {
+        background: #95a5a6;
+        color: white;
+    }
+
+    input[type="date"] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 0.8rem;
+    }
+</style>
+{% endblock %}

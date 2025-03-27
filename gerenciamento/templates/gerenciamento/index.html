@@ -1,0 +1,152 @@
+{% extends "gerenciamento/menu/base.html" %}
+{% block content %}
+<div class="header-dashboard">
+    <h1 class="titulo-dashboard">Bem-Vindo</h1>
+    <p class="subtitulo-dashboard">Sistema de Gerenciamento de Piscicultura</p>
+</div>
+
+
+    <div class="mapa-navegacao">
+        <div class="item-mapa">
+            <a href="{% url 'tanques' %}">
+                <i class="fas fa-water"></i>
+                <p>Tanques</p>
+            </a>
+        </div>
+        <div class="item-mapa">
+            <a href="{% url 'alevinos' %}">
+                <i class="fas fa-fish"></i>
+                <p>Espécies</p>
+            </a>
+        </div>
+        <div class="item-mapa">
+            <a href="{% url 'insumos' %}">
+                <i class="fas fa-box"></i>
+                <p>Insumos</p>
+            </a>
+        </div>
+        <div class="item-mapa">
+            <a href="{% url 'notificacoes' %}">
+                <i class="fa-solid fa-list-check"></i>
+                <p>Pendências</p>
+            </a>
+        </div>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <div class="caixa-informacao">
+        <h2>Total de Tanques Povoados Atuais</h2>
+        <p>{{ total_tanques }}</p>
+    </div>
+    
+
+    <style>
+        :root {
+            --cor-primaria: #2c3e50;
+            --cor-secundaria: #3498db;
+            --cor-destaque: #e74c3c;
+            --cor-fundo: #f8f9fa;
+            --cor-texto: #2c3e50;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+        }
+
+        .mapa-navegacao {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .item-mapa {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .caixa-informacao {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 40px auto;
+            max-width: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .caixa-informacao p {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .titulo-dashboard {
+            font-size: 2.5rem;
+            color: var(--cor-primaria);
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitulo-dashboard {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        .item-mapa:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .item-mapa i {
+            font-size: 2.5rem;
+            color: var(--cor-secundaria);
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .item-mapa p {
+            color: var(--cor-texto);
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .info-box {
+            margin-top: 40px;
+            background-color: #f1f1f1; 
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .info-box h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #333333;
+        }
+
+        .info-box p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+
+{% endblock content %}

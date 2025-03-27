@@ -1,0 +1,12 @@
+{% extends 'gerenciamento/menu/base.html' %}
+
+{% block content %}
+<h1>Baixa Insumo</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="quantidade">Quantidade a ser <strong>RETIRADA</strong>:</label>
+    <input type="number" name="quantidade" id="quantidade" class="form-control" required min="1">
+    <button type="submit" class="btn btn-success mt-3">Dar Baixa</button>
+    <a href="{% url 'insumos' %}" class="btn btn-secondary mt-3">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'gerenciamento/menu/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center mb-4">Pendências</h2>
+
+        <!-- Filtros -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+            <div>
+                <button class="btn btn-outline-dark {% if not categoria %}active{% endif %}" onclick="filtrar('')">Todas</button>
+                <button class="btn btn-outline-primary {% if categoria == 'tanques' %}active{% endif %}" onclick="filtrar('tanques')">Tanques</button>
+                <button class="btn btn-outline-success {% if categoria == 'insumos' %}active{% endif %}" onclick="filtrar('insumos')">Insumos</button>
+            </div>
+            <div>
+                <button class="btn btn-outline-warning {% if prioridade == 'warning' %}active{% endif %}" onclick="filtrar('', 'warning')">⚠️ Atenção</button>
+                <button class="btn btn-outline-danger {% if prioridade == 'danger' %}active{% endif %}" onclick="filtrar('', 'danger')">❗ Crítico</button>
+            </div>
+        </div>
+
+        {% if notificacoes %}
+            <div class="row">
+                {% for notificacao in notificacoes %}
+                    <div class="col-md-6">
+                        <div class="card mb-3 border-{% if notificacao.tipo == 'warning' %}warning{% else %}danger{% endif %} shadow-sm">
+                            <div class="card-body">
+                                <!-- Detecta se é Tanque ou Insumo -->
+                                {% if "Tanque" in notificacao.mensagem %}
+                                    <h5 class="fw-bold {% if notificacao.tipo == 'warning' %}text-warning{% else %}text-danger{% endif %}">
+                                        🐟 Tanque: <span class="text-dark">{{ notificacao.mensagem|slice:"7:" }}</span>
+                                    </h5>
+                                {% elif "Insumo" in notificacao.mensagem %}
+                                    <h5 class="fw-bold {% if notificacao.tipo == 'warning' %}text-warning{% else %}text-danger{% endif %}">
+                                        📦 Insumo: <span class="text-dark">{{ notificacao.mensagem|slice:"7:" }}</span>
+                                    </h5>
+                                {% endif %}
+
+
+
+                                <!-- Data da notificação -->
+                                <small class="text-muted"> {{ notificacao.criada_em|date:"d/m/Y H:i" }}</small>
+
+                                <!-- Badge de Prioridade -->
+                                <span class="badge {% if notificacao.tipo == 'warning' %}bg-warning text-dark{% else %}bg-danger text-light{% endif %}">
+                                    {% if notificacao.tipo == 'warning' %} Atenção{% else %} Crítico{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center mt-3">
+                <i class="fas fa-bell-slash"></i> Nenhuma pendência no momento.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Script para Filtragem -->
+<script>
+    function filtrar(categoria = '', prioridade = '') {
+        let url = new URL(window.location.href);
+        if (categoria) {
+            url.searchParams.set("categoria", categoria);
+        } else {
+            url.searchParams.delete("categoria");
+        }
+        if (prioridade) {
+            url.searchParams.set("prioridade", prioridade);
+        } else {
+            url.searchParams.delete("prioridade");
+        }
+        window.location.href = url.toString();
+    }
+</script>
+{% endblock %}

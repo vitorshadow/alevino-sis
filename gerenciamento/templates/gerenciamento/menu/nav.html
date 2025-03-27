@@ -1,0 +1,73 @@
+<div class="sidebar">
+    <button class="collapse-btn" onclick="toggleSidebar()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </button>
+    <h3 class="menu-title">Menu</h3>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">
+                <i class="fas fa-home"></i><span>Início</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'tanques' %}active{% endif %}" href="{% url 'tanques' %}">
+                <i class="fas fa-water"></i><span>Tanques</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'alevinos' %}active{% endif %}" href="{% url 'alevinos' %}">
+                <i class="fas fa-fish"></i><span>Alevinos</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'insumos' %}active{% endif %}" href="{% url 'insumos' %}">
+                <i class="fas fa-box"></i><span>Insumos</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'notificacoes' %}active{% endif %}" href="{% url 'notificacoes' %}">
+                    <i class="fa-solid fa-list-check"></i><span>Pendências</span>
+                </a>
+            </li>
+            
+        </li>
+    </ul>
+
+{% if user.is_authenticated %}   
+<div class="text-center mb-3">
+    <a href="{% url 'perfil' %}" class="d-flex align-items-center text-decoration-none">
+        <!-- Imagem do Perfil -->
+        <img src="{% if request.user.profile.imagem %}{{ request.user.profile.imagem.url }}{% else %}/static/img/default-profile.png{% endif %}" 
+            class="rounded-circle border shadow-sm perfil-foto" alt="Foto de Perfil">
+
+        <!-- Nome do Usuário (Visível apenas quando expandido) -->
+        <span class="ms-2 perfil-nome d-none d-md-inline">{{ request.user.profile.nome|default:'Usuário' }}</span>
+    </a>
+</div>
+{% endif %}
+    
+    
+    <div class="nav-bottom">
+        <ul class="nav flex-column">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link text-danger {% if request.resolver_match.url_name == 'logout' %}active{% endif %}" 
+                   href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i><span>Sair</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link text-success {% if request.resolver_match.url_name == 'login' %}active{% endif %}" 
+                   href="{% url 'login' %}">
+                    <i class="fas fa-sign-in-alt"></i><span>Login</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    
+</div>

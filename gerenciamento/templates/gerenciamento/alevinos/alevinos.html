@@ -1,0 +1,309 @@
+{% extends 'gerenciamento/menu/base.html' %}
+
+{% block content %}
+<h1 class="text-center">Lista de Espécies</h1>
+<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAlevinoModal">Nova Espécie</button>
+
+<style>
+    .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+    .table {
+        width: 90%; 
+        margin: 0 auto; 
+    }
+
+    .has-error input {
+            border: 2px solid #dc3545 !important;
+        }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        padding: 5px 10px;
+        background: #f8d7da;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .error-message i {
+        font-size: 1rem;
+    }
+
+    .container-form {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 2rem;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        color: #95a5a6;
+        font-size: 0.95rem;
+    }
+
+    .custom-form label {
+        display: block;
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+    }
+
+    .custom-form input,
+    .custom-form select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-form input:focus,
+    .custom-form select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        outline: none;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-text {
+        display: block;
+        color: #7f8c8d;
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn-save {
+        background: #27ae60;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+        background: #bdc3c7;
+        color: #2c3e50;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+    }
+
+    .btn-cancel:hover {
+        background: #95a5a6;
+        color: white;
+    }
+
+    input[type="date"] {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 0.8rem;
+    }
+
+    .modal-dialog {
+    max-width: 700px;
+    width: 90%; 
+    }
+
+</style>
+
+<br><br>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Nome da Espécie
+                    <button type="button" class="btn btn-sm btn-outline-primary sort-btn" data-sort="especie">
+                        <i class="fas fa-sort"></i>
+                    </button>
+            </button>
+                </th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alevino in alevinos %}
+            <tr>
+                <td>{{ alevino.especie }}</td>
+                <td>
+                    <a href="{% url 'alevino-update' alevino.pk %}" class="btn btn-warning btn-sm"> <i class="fas fa-edit"></i></a>
+                    <a href="{% url 'alevino-delete' alevino.pk %}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">Nenhum Alevino registrado</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<br><br>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1" aria-label="Primeira">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Próxima">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Última">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
+
+<div class="modal fade" id="createAlevinoModal" tabindex="-1" aria-labelledby="createAlevinoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="container-form">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h1 class="form-title">Nova Espécie</h1>
+                            <p class="form-subtitle">Insira o Tipo da Espécie</p>
+                        </div>
+                        
+                        <form method="post" action="{% url 'alevino-create' %}" class="custom-form">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="{{ form.especie.id_for_label }}">Nome da Espécie:</label>
+                                {{ form.especie }}
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-save">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sortButtons = document.querySelectorAll(".sort-btn");
+    
+        sortButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const sortField = this.dataset.sort;
+                const currentParams = new URLSearchParams(window.location.search);
+                const currentSort = currentParams.get("sort");
+                const currentOrder = currentParams.get("order");
+    
+                let newOrder;
+                
+                if (!currentSort || currentSort !== sortField) {
+                    newOrder = "asc";
+                } else if (currentOrder === "asc") {
+                    newOrder = "desc";
+                } else {
+                    currentParams.delete("sort");
+                    currentParams.delete("order");
+                    window.location.search = currentParams.toString();
+                    return;
+                }
+    
+                currentParams.set("sort", sortField);
+                currentParams.set("order", newOrder);
+                window.location.search = currentParams.toString();
+            });
+        });
+    
+        const currentParams = new URLSearchParams(window.location.search);
+        const currentSort = currentParams.get("sort");
+        const currentOrder = currentParams.get("order");
+    
+        document.querySelectorAll(".sort-btn").forEach(button => {
+            const icon = button.querySelector("i");
+            icon.classList.remove("fa-sort-up", "fa-sort-down", "fa-sort");
+    
+            if (button.dataset.sort === currentSort) {
+                if (currentOrder === "asc") {
+                    icon.classList.add("fa-sort-up");
+                } else if (currentOrder === "desc") {
+                    icon.classList.add("fa-sort-down");
+                }
+            } else {
+                icon.classList.add("fa-sort");
+            }
+        });
+    });
+</script>
+
+
+
+
+{% endblock %}
